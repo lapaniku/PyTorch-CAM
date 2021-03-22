@@ -23,9 +23,13 @@ class CAM(object):
     def __init__(self, model):
         model_name = model.__class__.__name__
         print("hooking {}".format(model_name))
-        assert model_name == "ResNet", "Model architecture not supported"
+        assert model_name in ("ResNet", "Inception3"), "Model architecture not supported"
 
-        model.layer4.register_forward_hook(self.__hook)
+        if model_name == "ResNet":
+            model.layer4.register_forward_hook(self.__hook)
+        elif model_name == "Inception3":
+            model.Mixed_7c.register_forward_hook(self.__hook)
+            
         self.conv_features = None
         self.model = model
         params = list(model.parameters())
